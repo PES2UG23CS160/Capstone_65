@@ -1,4 +1,3 @@
-/// <reference types="vitest/config" />
 import path from 'path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -14,7 +13,7 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     react(),
-    tailwindcss(),
+    tailwindcss() as any,
   ],
   resolve: {
     alias: {
@@ -30,7 +29,6 @@ export default defineConfig({
       instances: [{ browser: 'chromium' }],
     },
     coverage: {
-      // include: ['src/**/*.{js,jsx,ts,tsx}'], // Uncomment to expand the report to all src/**/* so untested modules appear as 0% coverage.
       exclude: [
         'src/components/ui/**',
         'src/assets/**',
@@ -41,4 +39,4 @@ export default defineConfig({
       ],
     },
   },
-})
+} as any)

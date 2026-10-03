@@ -7,3 +7,6 @@ backend/aria.db
 node_modules/
 dist/
 frontend/.vite/
+
+backend/venv/
+venv/

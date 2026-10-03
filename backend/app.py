@@ -19,13 +19,28 @@ load_dotenv()
 
 
 def _ensure_monitor_tables():
-    """Create monitoring tables if they don't exist (safe on existing DBs)."""
-    import logging
+    """Create base schema and monitoring tables if they don't exist (safe on existing DBs)."""
+    import os, logging
     from auth import get_db_conn
     log = logging.getLogger("aria.migrate")
-    conn = get_db_conn()
+    try:
+        conn = get_db_conn()
+    except Exception as e:
+        log.warning(f"Database connection not available on startup: {e}")
+        return
+
     try:
         cur = conn.cursor()
+        # Ensure base schema is present
+        cur.execute("SELECT 1 FROM information_schema.tables WHERE table_name = 'users'")
+        if not cur.fetchone():
+            log.info("Base schema missing, running schema.sql...")
+            schema_path = os.path.join(os.path.dirname(__file__), "schema.sql")
+            if os.path.exists(schema_path):
+                with open(schema_path, "r", encoding="utf-8") as f:
+                    cur.execute(f.read())
+                conn.commit()
+
         cur.execute("""
             CREATE TABLE IF NOT EXISTS monitor_targets (
                 id                SERIAL PRIMARY KEY,
